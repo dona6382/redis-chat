@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Test</title>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <style>
+        #messages { 
+            height: 300px; 
+            overflow-y: scroll; 
+            border: 1px solid #ccc; 
+            margin-bottom: 10px; 
+            padding: 10px;
+        }
+        .message {
+            margin: 5px;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <label>User ID:</label>
+        <input type="text" id="userId" value="user1">
+        <label>Room ID:</label>
+        <input type="text" id="roomId" value="room1">
+        <button onclick="connect()">Connect</button>
+    </div>
+    <div id="messages"></div>
+    <div>
+        <input type="text" id="messageInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        let socket;
+        const messagesDiv = document.getElementById('messages');
+        
+        function connect() {
+            const userId = document.getElementById('userId').value;
+            const roomId = document.getElementById('roomId').value;
+            
+            socket = io('http://localhost:3000', {
+                query: {
+                    userId,
+                    roomId
+                }
+            });
+
+            socket.on('connect', () => {
+                addMessage('System', 'Connected to server');
+            });
+
+            socket.on('message', (data) => {
+                addMessage(data.userId, data.content);
+            });
+
+            socket.on('disconnect', () => {
+                addMessage('System', 'Disconnected from server');
+            });
+        }
+
+        function sendMessage() {
+            const content = document.getElementById('messageInput').value;
+            const userId = document.getElementById('userId').value;
+            const roomId = document.getElementById('roomId').value;
+
+            if (content && socket) {
+                const messageData = {
+                    userId,
+                    content,
+                    roomId,
+                    timestamp: new Date()
+                };
+                
+                socket.emit('message', messageData);
+                document.getElementById('messageInput').value = '';
+            }
+        }
+
+        function addMessage(userId, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.textContent = `${userId}: ${content}`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Enter key to send message
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
