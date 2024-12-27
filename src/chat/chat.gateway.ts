@@ -14,6 +14,8 @@ import { ChatService } from './chat.service';
     methods: ['GET', 'POST'],
     credentials: true,
   },
+  transports: ['websocket'],
+  path: '/socket.io/',
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly chatService: ChatService) {}
@@ -22,9 +24,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   async handleConnection(client: Socket) {
-    const { userId, roomId } = client.handshake.query;
-    console.log(`Client connected: ${userId} in room ${roomId}`);
-    client.join(roomId as string);
+    console.log('Client attempting to connect');
+    const { userId, roomId } = client.handshake.auth || {};
+    if (userId && roomId) {
+      console.log(`Client connected: ${userId} in room ${roomId}`);
+      client.join(roomId);
+    }
   }
 
   async handleDisconnect(client: Socket) {
