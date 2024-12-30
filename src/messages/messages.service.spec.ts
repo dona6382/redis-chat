@@ -9,7 +9,8 @@ describe('MessagesService', () => {
       providers: [MessagesService],
     }).compile();
 
-    service = module.get<MessagesService>(MessagesService);
+    service = module.get<MessageService>(MessageService);
+    model = module.get<Model<Message>>(getModelToken(Message.name));
   });
 
   it('should be defined', () => {

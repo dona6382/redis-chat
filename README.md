@@ -109,6 +109,14 @@ use redis-chat
 db.messages.countDocuments()
 ```
 
+#### K6 부하 테스트 결과 확인
+mac: brew install k6
+windows: winget install k6
+
+```bash
+k6 run src/test/load-test.ts
+```
+
 ## 성능 최적화
 - **Redis Pub/Sub**을 통한 메시지 브로드캐스팅
 - **MongoDB 인덱싱**
@@ -134,3 +142,4 @@ db.messages.countDocuments()
 - 사용자 인증
 - 채팅방 관리
 - 사용자 접속 로그
+- k6 부하 테스트

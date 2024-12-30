@@ -21,7 +21,7 @@ export default function () {
   const response = ws.connect(url, {}, function (socket) {
     socket.on('open', () => {
       console.log(`VU ${__VU}: Connected`);
-      
+        
       // Socket.IO v4 연결 시퀀스
       socket.send('40{\"auth\":{\"userId\":\"' + userId + '\",\"roomId\":\"' + roomId + '\"}}');
       
